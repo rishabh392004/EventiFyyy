@@ -1,16 +1,26 @@
-import express from 'express'
+import express from 'express';
 import dotenv from 'dotenv';
 import cors from 'cors';
+import connectDB from './src/config/db.js';
+import authRoutes from './src/routes/authRoutes.js';
+
 dotenv.config();
-import connectDB from './src/config/db.js'
-connectDB()
-const app=express();
+
+connectDB();
+
+const app = express();
+
 app.use(cors());
 app.use(express.json());
-app.get("/",(req,res)=>{
-    res.send('Event Management System')
+
+// Mount authentication routes
+app.use('/api/auth', authRoutes);
+
+app.get("/", (req, res) => {
+    res.send('Event Management System');
 });
-const PORT=process.env.PORT || 5000;
+
+const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
