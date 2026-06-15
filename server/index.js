@@ -3,6 +3,7 @@ import dotenv from 'dotenv';
 import cors from 'cors';
 import connectDB from './src/config/db.js';
 import authRoutes from './src/routes/authRoutes.js';
+import eventRoutes from './src/routes/eventRoutes.js';
 
 dotenv.config();
 
@@ -15,6 +16,7 @@ app.use(express.json());
 
 // Mount authentication routes
 app.use('/api/auth', authRoutes);
+app.use('/api/events', eventRoutes);
 
 app.get("/", (req, res) => {
     res.send('Event Management System');
