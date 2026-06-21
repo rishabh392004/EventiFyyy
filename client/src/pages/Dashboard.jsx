@@ -7,13 +7,13 @@ const Dashboard = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [filterCategory, setFilterCategory] = useState('All');
-
+  const [searchQuery,setSearchQuery]=useState('');
   const { user } = useAuth();
 
   useEffect(() => {
     fetchEvents();
   }, []);
-
+const filterEvent=events.filter
   const fetchEvents = async () => {
     try {
       const { data } = await api.get('/events');
