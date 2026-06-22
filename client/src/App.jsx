@@ -7,6 +7,10 @@ import Dashboard from './pages/Dashboard';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import CreateEvent from './pages/CreateEvent';
+import EventDetails from './pages/EventDetails';
+import MyEvents from './pages/MyEvents';
+import MyTickets from './pages/MyTickets';
+import Profile from './pages/Profile';
 
 function App() {
   return (
@@ -18,6 +22,7 @@ function App() {
           <Route path="/" element={<Dashboard />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/event/:id" element={<EventDetails />} />
 
           {/* Protected Routes */}
           <Route
@@ -25,6 +30,30 @@ function App() {
             element={
               <PrivateRoute>
                 <CreateEvent />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/my-events"
+            element={
+              <PrivateRoute>
+                <MyEvents />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/my-tickets"
+            element={
+              <PrivateRoute>
+                <MyTickets />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/profile"
+            element={
+              <PrivateRoute>
+                <Profile />
               </PrivateRoute>
             }
           />

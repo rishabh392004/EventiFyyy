@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import React, { useState, useRef, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { animateFormEntrance } from '../utils/gsapAnimations';
 
 const Register = () => {
   const [name, setName] = useState('');
@@ -8,142 +9,272 @@ const Register = () => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-
-  const { register } = useAuth();
+  const formRef = useRef(null);
   const navigate = useNavigate();
+  const { register } = useAuth();
+
+  useEffect(() => {
+    if (formRef.current) {
+      animateFormEntrance(formRef.current);
+    }
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
-    setLoading(true);
 
+    if (password.length < 6) {
+      setError('Password must be at least 6 characters long.');
+      return;
+    }
+
+    setLoading(true);
     try {
       await register(name, email, password);
       navigate('/');
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to register user. Email may be already taken.');
+      setError(err.response?.data?.message || 'Registration failed. Please try again.');
     } finally {
       setLoading(false);
     }
   };
 
+  const styles = {
+    wrapper: {
+      minHeight: '100vh',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      position: 'relative',
+      overflow: 'hidden',
+      padding: '2rem',
+    },
+    blobOne: {
+      position: 'absolute',
+      width: '380px',
+      height: '380px',
+      borderRadius: '50%',
+      background: 'radial-gradient(circle, hsla(var(--accent), 0.18) 0%, transparent 70%)',
+      top: '-60px',
+      right: '-80px',
+      filter: 'blur(80px)',
+      pointerEvents: 'none',
+      zIndex: 0,
+    },
+    blobTwo: {
+      position: 'absolute',
+      width: '440px',
+      height: '440px',
+      borderRadius: '50%',
+      background: 'radial-gradient(circle, hsla(var(--primary), 0.15) 0%, transparent 70%)',
+      bottom: '-100px',
+      left: '-120px',
+      filter: 'blur(90px)',
+      pointerEvents: 'none',
+      zIndex: 0,
+    },
+    blobThree: {
+      position: 'absolute',
+      width: '180px',
+      height: '180px',
+      borderRadius: '50%',
+      background: 'radial-gradient(circle, hsla(var(--secondary), 0.14) 0%, transparent 70%)',
+      bottom: '30%',
+      right: '10%',
+      filter: 'blur(55px)',
+      pointerEvents: 'none',
+      zIndex: 0,
+    },
+    spinRing: {
+      position: 'absolute',
+      width: '80px',
+      height: '80px',
+      borderRadius: '50%',
+      border: '2px solid hsla(var(--accent), 0.14)',
+      bottom: '18%',
+      right: '20%',
+      animation: 'spinSlow 20s linear infinite',
+      pointerEvents: 'none',
+      zIndex: 0,
+    },
+    spinRingSmall: {
+      position: 'absolute',
+      width: '44px',
+      height: '44px',
+      borderRadius: '50%',
+      border: '1.5px solid hsla(var(--primary), 0.1)',
+      top: '20%',
+      left: '14%',
+      animation: 'spinSlow 26s linear infinite reverse',
+      pointerEvents: 'none',
+      zIndex: 0,
+    },
+    card: {
+      width: '100%',
+      maxWidth: '480px',
+      position: 'relative',
+      zIndex: 1,
+    },
+    cardInner: {
+      background: 'var(--surface-glass)',
+      backdropFilter: 'blur(24px)',
+      WebkitBackdropFilter: 'blur(24px)',
+      border: '1px solid hsl(var(--border))',
+      borderRadius: 'var(--radius-lg)',
+      padding: '3rem 2.5rem 2.5rem',
+      boxShadow: 'var(--shadow-lg)',
+    },
+    title: {
+      fontSize: '2rem',
+      fontWeight: 700,
+      color: 'hsl(var(--text-primary))',
+      marginBottom: '0.5rem',
+      letterSpacing: '-0.02em',
+    },
+    subtitle: {
+      fontSize: '0.95rem',
+      color: 'hsl(var(--text-muted))',
+      marginBottom: '2rem',
+      lineHeight: 1.5,
+    },
+    errorBox: {
+      background: 'hsla(var(--error) / 0.08)',
+      border: '1px solid hsla(var(--error) / 0.2)',
+      borderRadius: 'var(--radius-md)',
+      padding: '0.85rem 1rem',
+      marginBottom: '1.5rem',
+      color: 'hsl(var(--error))',
+      fontSize: '0.875rem',
+      lineHeight: 1.5,
+    },
+    form: {
+      display: 'flex',
+      flexDirection: 'column',
+      gap: '1.25rem',
+    },
+    hint: {
+      fontSize: '0.78rem',
+      color: 'hsl(var(--text-muted))',
+      marginTop: '0.35rem',
+      opacity: 0.8,
+    },
+    submitBtn: {
+      marginTop: '0.5rem',
+      width: '100%',
+      padding: '0.85rem 1.5rem',
+      fontSize: '0.95rem',
+      fontWeight: 600,
+      cursor: loading ? 'not-allowed' : 'pointer',
+      opacity: loading ? 0.7 : 1,
+      transition: 'var(--transition-fast)',
+    },
+    footer: {
+      textAlign: 'center',
+      marginTop: '1.75rem',
+      paddingTop: '1.5rem',
+      borderTop: '1px solid hsla(var(--border), 0.5)',
+      fontSize: '0.9rem',
+      color: 'hsl(var(--text-muted))',
+    },
+    footerLink: {
+      color: 'hsl(var(--primary))',
+      textDecoration: 'none',
+      fontWeight: 600,
+      transition: 'var(--transition-fast)',
+    },
+  };
+
   return (
-    <div style={styles.page}>
-      {/* Decorative Blur Blobs */}
-      <div className="glow-blob" style={{ ...styles.blob, top: '10%', right: '10%', width: '400px', height: '400px', background: 'hsl(var(--primary))' }}></div>
-      <div className="glow-blob" style={{ ...styles.blob, bottom: '10%', left: '10%', width: '350px', height: '350px', background: 'hsl(var(--secondary))' }}></div>
+    <div style={styles.wrapper}>
+      <style>{`
+        @keyframes spinSlow {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
+        }
+      `}</style>
 
-      <div className="glass-panel" style={styles.card}>
-        <h2 style={styles.title}>Join <span className="gradient-text">EventiFy</span></h2>
-        <p style={styles.subtitle}>Sign up to search, create, and join events</p>
+      <div style={styles.blobOne} className="glow-blob" />
+      <div style={styles.blobTwo} className="glow-blob" />
+      <div style={styles.blobThree} className="glow-blob" />
+      <div style={styles.spinRing} />
+      <div style={styles.spinRingSmall} />
 
-        {error && <div style={styles.errorAlert}>{error}</div>}
+      <div style={styles.card} ref={formRef}>
+        <div style={styles.cardInner} className="glass-panel">
+          <h1 style={styles.title}>
+            Join <span className="gradient-text">EventiFy</span>
+          </h1>
+          <p style={styles.subtitle}>
+            Create your account and start hosting unforgettable events.
+          </p>
 
-        <form onSubmit={handleSubmit}>
-          <div className="form-group">
-            <label className="form-label">Full Name</label>
-            <input
-              type="text"
-              className="form-input"
-              placeholder="e.g. John Doe"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              required
-            />
+          {error && <div style={styles.errorBox}>{error}</div>}
+
+          <form onSubmit={handleSubmit} style={styles.form}>
+            <div className="form-group">
+              <label className="form-label" htmlFor="register-name">Full Name</label>
+              <input
+                className="form-input"
+                id="register-name"
+                type="text"
+                placeholder="John Doe"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                required
+                autoComplete="name"
+              />
+            </div>
+
+            <div className="form-group">
+              <label className="form-label" htmlFor="register-email">Email Address</label>
+              <input
+                className="form-input"
+                id="register-email"
+                type="email"
+                placeholder="you@example.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                autoComplete="email"
+              />
+            </div>
+
+            <div className="form-group">
+              <label className="form-label" htmlFor="register-password">Password</label>
+              <input
+                className="form-input"
+                id="register-password"
+                type="password"
+                placeholder="••••••••"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                minLength={6}
+                autoComplete="new-password"
+              />
+              <p style={styles.hint}>Must be at least 6 characters</p>
+            </div>
+
+            <button
+              type="submit"
+              className="btn btn-primary"
+              style={styles.submitBtn}
+              disabled={loading}
+            >
+              {loading ? 'Creating account...' : 'Create Account'}
+            </button>
+          </form>
+
+          <div style={styles.footer}>
+            Already have an account?{' '}
+            <Link to="/login" style={styles.footerLink}>
+              Sign in
+            </Link>
           </div>
-
-          <div className="form-group">
-            <label className="form-label">Email Address</label>
-            <input
-              type="email"
-              className="form-input"
-              placeholder="e.g. john@example.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-            />
-          </div>
-
-          <div className="form-group" style={{ marginBottom: '28px' }}>
-            <label className="form-label">Password</label>
-            <input
-              type="password"
-              className="form-input"
-              placeholder="Min. 6 characters"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
-          </div>
-
-          <button type="submit" className="btn btn-primary" style={styles.btn} disabled={loading}>
-            {loading ? 'Creating Account...' : 'Register'}
-          </button>
-        </form>
-
-        <p style={styles.footerText}>
-          Already have an account? <Link to="/login" style={styles.footerLink}>Login here</Link>
-        </p>
+        </div>
       </div>
     </div>
   );
-};
-
-const styles = {
-  page: {
-    minHeight: '85vh',
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: '24px',
-    position: 'relative',
-  },
-  blob: {
-    opacity: 0.08,
-  },
-  card: {
-    width: '100%',
-    maxWidth: '450px',
-    padding: '40px 32px',
-    background: 'rgba(15, 20, 35, 0.55)',
-  },
-  title: {
-    fontSize: '2.2rem',
-    marginBottom: '8px',
-    textAlign: 'center',
-    letterSpacing: '-0.02em',
-  },
-  subtitle: {
-    color: 'hsl(var(--text-secondary))',
-    fontSize: '0.95rem',
-    marginBottom: '32px',
-    textAlign: 'center',
-  },
-  errorAlert: {
-    backgroundColor: 'rgba(239, 68, 68, 0.1)',
-    border: '1px solid hsl(var(--error))',
-    color: 'hsl(var(--error))',
-    padding: '12px 16px',
-    borderRadius: '8px',
-    fontSize: '0.9rem',
-    marginBottom: '24px',
-    lineHeight: 1.4,
-  },
-  btn: {
-    width: '100%',
-    padding: '14px',
-  },
-  footerText: {
-    textAlign: 'center',
-    marginTop: '24px',
-    fontSize: '0.9rem',
-    color: 'hsl(var(--text-secondary))',
-  },
-  footerLink: {
-    color: 'hsl(var(--primary))',
-    fontWeight: '600',
-    textDecoration: 'none',
-  },
 };
 
 export default Register;

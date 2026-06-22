@@ -10,7 +10,7 @@ const generateToken = (userId) => {
 
 //register a new user 
 export const registerUser = async (req, res) => {
-  const { name, email, password } = req.body;
+  const { name, email, password, profileImg } = req.body;
 
   try {
     // 1. Check if user already exists
@@ -24,6 +24,7 @@ export const registerUser = async (req, res) => {
       name,
       email,
       password,
+      profileImg,
     });
 
     if (user) {
@@ -32,6 +33,7 @@ export const registerUser = async (req, res) => {
         _id: user._id,
         name: user.name,
         email: user.email,
+        profileImg: user.profileImg,
         token: generateToken(user._id),
       });
     } else {
@@ -53,6 +55,7 @@ export const loginUser = async (req, res) => {
         _id: user._id,
         name: user.name,
         email: user.email,
+        profileImg: user.profileImg,
         token: generateToken(user._id),
       });
     } else {
